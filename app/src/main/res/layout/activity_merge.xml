@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Merge">
+    <TextView
+        android:layout_width="180dp"
+        android:layout_height="40dp"
+        android:textSize="17sp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:id="@+id/nameshown"
+        android:layout_marginTop="20dp"
+        android:textColor="#000"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="30dp"
+        android:layout_toRightOf="@id/nameshown"
+        android:text="MERGE"
+        android:layout_marginLeft="30dp"
+        android:onClick="merge"/>
+
+</RelativeLayout>

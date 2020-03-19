@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Save">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="46dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="20dp"
+            android:ems="10"
+            android:hint="Name"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/nickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="46dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@id/name"
+            android:ems="10"
+            android:hint="Nickname"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/number"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginStart="46dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@id/nickname"
+            android:ems="10"
+            android:hint="Number"
+            android:inputType="phone" />
+
+        <EditText
+            android:id="@+id/altumber"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginStart="46dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@id/number"
+            android:ems="10"
+            android:hint="Alternate Number"
+            android:inputType="phone" />
+
+        <EditText
+            android:id="@+id/address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="46dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@id/altmail"
+            android:ems="10"
+            android:hint="Home Address"
+            android:inputType="textPostalAddress" />
+
+        <EditText
+            android:id="@+id/altaddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="46dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@id/address"
+            android:ems="10"
+            android:hint="Office Address"
+            android:inputType="textPostalAddress" />
+
+        <EditText
+            android:id="@+id/mail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="46dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@id/altumber"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textEmailAddress" />
+
+        <EditText
+            android:id="@+id/altmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="46dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@id/mail"
+            android:ems="10"
+            android:hint="Alternate Email"
+            android:inputType="textEmailAddress"
+            />
+
+        <TextView
+            android:id="@+id/cattext"
+            android:layout_width="90dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="47dp"
+            android:layout_marginLeft="47dp"
+            android:layout_marginTop="6dp"
+            android:layout_below="@id/altaddress"
+            android:text="Category"
+            android:textColor="#000"
+            android:textSize="17sp" />
+
+        <Spinner
+            android:id="@+id/categories"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@id/cattext"
+            android:layout_below="@id/altaddress"/>
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="46dp"
+            android:layout_marginLeft="46dp"
+            android:layout_below="@id/newcategory"
+            android:layout_marginTop="50dp"
+            android:onClick="saveData"
+            android:text="SAVE" />
+        <EditText
+            android:layout_width="150dp"
+            android:layout_height="45dp"
+            android:layout_below="@id/cattext"
+            android:hint="New Category"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginStart="46dp"
+            android:id="@+id/newcategory"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@id/newcategory"
+            android:layout_below="@id/cattext"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Add"
+            android:onClick="getCategory"
+            />
+    </RelativeLayout>
+
+
+
+</ScrollView>

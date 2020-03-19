@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/itemlayout">
+
+    <TextView
+        android:id="@+id/listitem_name"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:textColor="#000"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/lisitem_number"
+        android:layout_width="match_parent"
+        android:layout_height="33dp"
+        android:layout_below="@id/listitem_name"
+        android:textColor="#000"
+        android:textSize="17sp" />
+
+
+</RelativeLayout>
