@@ -1,3 +1,9 @@
+/*
+    Saves a new contact if no existing numbers or emails are present in the new contact
+    Also used to update an existing contact with duplication constraint
+ */
+
+
 package com.example.contactsapp;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +24,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Save extends AppCompatActivity {
@@ -63,7 +70,6 @@ public class Save extends AppCompatActivity {
         cursor=db.rawQuery("SELECT COUNT(*) FROM CATEGORIES",null);
         while(cursor.moveToNext())
         {
-            //String c = cursor.getString(0);
             int cInt=Integer.parseInt(cursor.getString(0));
             if(cInt==0)
             {
@@ -116,6 +122,7 @@ public class Save extends AppCompatActivity {
 
 
     }
+    //When User Adds a New Category
     public void  getCategory(View view)
     {
         EditText addcat = findViewById(R.id.newcategory);
@@ -157,19 +164,16 @@ public class Save extends AppCompatActivity {
 
 
         addr = "";
-        String homelat = "";
-        String homelong = "";
         if (_addr.getText().toString().trim().length() != 0)
             addr = _addr.getText().toString();
 
 
         altaddr = "";
-        String officelat = "";
-        String officelong = "";
         if (_altaddr.getText().toString().trim().length() != 0)
             altaddr = _altaddr.getText().toString();
 
         spinner = (Spinner) findViewById(R.id.categories);
+
 
         if (newCat == true)
             selectedCategory = getnewcat;
@@ -182,6 +186,7 @@ public class Save extends AppCompatActivity {
 
         mobile=mobile.trim();altmobile=altmobile.trim();mail=mail.trim();altmail=altmail.trim();
 
+        //Detecting Duplicate Numbers and Emails During Update
 
         if (update && !merge)
         {
@@ -255,6 +260,7 @@ public class Save extends AppCompatActivity {
             }
 
         }
+        ////Detecting Duplicate Numbers and Emails During Saving a New Contact
         else {
             try {
                 if (mobile.length() != 0 && !merge) {
@@ -307,6 +313,8 @@ public class Save extends AppCompatActivity {
             }
         }
 
+        //No Duplicate Numbers or Emails Found!
+
         if (update && !merge) {
             Log.i("On Update ", "Ok");
 
@@ -314,8 +322,7 @@ public class Save extends AppCompatActivity {
                 if (name.length() != 0 && mobile.length() != 0) {
                     db.execSQL("UPDATE CONTACTS SET NAME='" + name + "', NICKNAME='" + nickname + "', MOBILE = '" + mobile + "'," +
                             "ALTMOBILE='" + altmobile + "',MAIL='" + mail + "',ALTMAIL='" + altmail + "',ADDRESS='" + addr + "'," +
-                            "ALTADDRESS='" + altaddr + "',CATEGORY='" + selectedCategory + "', HOMELAT='" + homelat + "', HOMELONG='" + homelong + "'," +
-                            "OFFICELAT='" + officelat + "', OFFICELONG='" + officelong + "' WHERE ID='" + getid + "'");
+                            "ALTADDRESS='" + altaddr + "',CATEGORY='" + selectedCategory + "' WHERE ID='" + getid + "'");
 
                     Toast.makeText(this, "Update Done", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, MainActivity.class);
@@ -345,10 +352,9 @@ public class Save extends AppCompatActivity {
             } else {
                 try {
 
-                    db.execSQL("INSERT INTO CONTACTS(NAME,NICKNAME,MOBILE,ALTMOBILE,MAIL,ALTMAIL,ADDRESS,ALTADDRESS,CATEGORY,HOMELAT,HOMELONG,OFFICELAT,OFFICELONG)" +
+                    db.execSQL("INSERT INTO CONTACTS(NAME,NICKNAME,MOBILE,ALTMOBILE,MAIL,ALTMAIL,ADDRESS,ALTADDRESS,CATEGORY)" +
                             " VALUES ('" + name + "','" + nickname + "','" + mobile + "','" + altmobile + "','" + mail + "','" + altmail + "'," +
-                            "'" + addr + "','" + altaddr + "','" + selectedCategory + "'," +
-                            "'" + homelat + "', '" + homelong + "', '" + officelat + "', '" + officelong + "')");
+                            "'" + addr + "','" + altaddr + "','" + selectedCategory + "')");
 
                     toast = Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT);
                     toast.show();
@@ -367,7 +373,7 @@ public class Save extends AppCompatActivity {
     }
 
 
-
+    //Merging During Saving a New Contact
     public void merging()
     {
         Toast toas=Toast.makeText(this,"Found Existing Contact",Toast.LENGTH_SHORT);
@@ -388,6 +394,8 @@ public class Save extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    //Merging in Case of Update
     public void merging(String contact_id)
     {
         Toast toas=Toast.makeText(this,"Found Existing Contact",Toast.LENGTH_SHORT);

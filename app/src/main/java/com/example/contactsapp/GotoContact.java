@@ -1,3 +1,10 @@
+/*
+    Shows the profile of a contact.
+    User may wish to Edit,Delete or click on Options
+    The Option button is used to show existing contacts living nearby the selected contact
+
+ */
+
 package com.example.contactsapp;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -199,5 +206,26 @@ public class GotoContact extends AppCompatActivity {
         Intent intent=new Intent(this,MainActivity.class);
         startActivity(intent);
 
+    }
+    public void options(View view)
+    {
+        SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
+        Cursor cursor;
+        cursor=db.rawQuery("SELECT ID FROM CONTACTS WHERE NAME='"+getname+"' AND MOBILE='"+getnumber+"' ",null);
+        if(cursor.moveToNext())
+        {
+            Log.i("Show ",cursor.getString(0)+ " LENGTH = "+ String.valueOf(cursor.getString(0).length()));
+            String id=cursor.getString(0);
+            Intent intent=new Intent(this,Options.class);
+            intent.putExtra("id",id);
+            startActivity(intent);
+
+        }
+
+    }
+    public void home(View view)
+    {
+        Intent intent=new Intent(this,MainActivity.class);
+        startActivity(intent);
     }
 }

@@ -1,3 +1,9 @@
+/*
+      Used to merge :
+         -an yet to save contact having numbers or emails that are already present in some existing Contact
+         -an existing contact which after being updated has numbers or emails that are already present in some other existing Contact
+         -an existing contact that the user wishes to merge with some other contact living nearby
+*/
 package com.example.contactsapp;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -71,7 +77,12 @@ public class Merge extends AppCompatActivity {
 
                 }
 
-                if(savedmail.trim().length()==0 && mail.trim().length()!=0)
+                if(savedmail.trim().length()==0 && savedaltmail.trim().length()==0 && mail.trim().length()!=0 && altmail.trim().length()!=0)
+                {
+                    savedmail=mail;
+                    savedaltmail=altmail;
+                }
+                else if(savedmail.trim().length()==0 && mail.trim().length()!=0)
                     savedmail=mail;
                 else if(savedaltmail.trim().length()==0 && mail.trim().length()!=0)
                 {
