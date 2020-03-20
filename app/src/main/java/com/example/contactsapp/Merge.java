@@ -49,7 +49,6 @@ public class Merge extends AppCompatActivity {
         SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
         Cursor cursor;
         String savedid,savedname,savednickname,savedmobile,savedaltmobile,savedmail,savedaltmail,savedaddress,savedaltaddress,savedcatgory;
-        //Name
         try {
             cursor=db.rawQuery("SELECT * FROM CONTACTS WHERE ID='"+id+"' ",null);
             if(cursor.moveToNext())

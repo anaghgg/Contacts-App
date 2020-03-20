@@ -79,7 +79,6 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
                         SQLiteDatabase db=context.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
                         Cursor cursor;
                         cursor=db.rawQuery("SELECT ID FROM CONTACTS WHERE NAME='"+namelist.get(position)+"' AND MOBILE='"+numberlist.get(position)+"' ",null);
-                        //String contactid="";
                         if(cursor.moveToNext())
                         {
                             final String contactid=cursor.getString(0);
@@ -90,7 +89,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
                                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
-                                            // Continue with delete operation
+
                                             Log.i("Merge","Started");
                                             Intent intent=new Intent(context,Merge.class);
                                             intent.putExtra("id",contactid);
@@ -108,7 +107,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
                                         }
                                     })
 
-                                    // A null listener allows the button to dismiss the dialog and take no further action.
+
                                     .setNegativeButton(android.R.string.no, null)
                                     .show();
                         }

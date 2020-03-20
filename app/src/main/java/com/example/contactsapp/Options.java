@@ -1,5 +1,5 @@
 
-/* Shows which existing contacts life nearby a selected Contact
+/* Shows which existing contacts live nearby a selected Contact
 
    User can choose to merge the selected contact with anyone living nearby
 
@@ -77,7 +77,6 @@ public class Options extends AppCompatActivity {
         {
             Log.i("Geocode","Inside shownearby");
             latitude="";longitude="";
-            //Double dlat = null,dlong=null;
             Geocoder geo=new Geocoder(this, Locale.getDefault());
             try{
                 List<Address> current=geo.getFromLocationName(address,1);

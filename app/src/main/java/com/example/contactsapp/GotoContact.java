@@ -29,7 +29,6 @@ public class GotoContact extends AppCompatActivity {
     public String getname;
     public String getnumber;
 
-    //@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,9 +63,7 @@ public class GotoContact extends AppCompatActivity {
                 showmail.setText("Mail : "+cursor.getString(2));
                 showaltmail.setText("Alternate Email : "+cursor.getString(3));
                 showaddr.setText("Home Address : "+cursor.getString(4).trim());
-                //showaddr.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_call_black_24dp,0);
                 showaltaddr.setText("Office Address : "+cursor.getString(5));
-                //showaltaddr.setCompoundDrawablesWithIntrinsicBounds(0,0,0,R.drawable.ic_location_on_black_24dp);
                 showcategory.setText("Category : "+cursor.getString(6));
 
                 final String addr1=cursor.getString(4).trim();
