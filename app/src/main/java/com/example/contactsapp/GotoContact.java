@@ -7,10 +7,13 @@
 
 package com.example.contactsapp;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -28,11 +31,13 @@ import java.util.ArrayList;
 public class GotoContact extends AppCompatActivity {
     public String getname;
     public String getnumber;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goto_contact);
+        context=getApplicationContext();
         String name = getIntent().getStringExtra("getname");
         final String number = getIntent().getStringExtra("getnumber");
         getname=name;
@@ -120,22 +125,22 @@ public class GotoContact extends AppCompatActivity {
 
                     showsecondary.setText(othernumber);
                     showsecondary.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(GotoContact.this,new String[]{Manifest.permission.CALL_PHONE},1);
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
+                        @Override
+                        public void onClick(View v) {
+                            if (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.requestPermissions(GotoContact.this,new String[]{Manifest.permission.CALL_PHONE},1);
+                                // TODO: Consider calling
+                                //    ActivityCompat#requestPermissions
 
-                            return;
+                                return;
+                            }
+                            Log.i("Calling ",othernumber);
+                            Intent callIntent = new Intent(Intent.ACTION_CALL);
+                            callIntent.setData(Uri.parse("tel:" + othernumber));
+                            startActivity(callIntent);
                         }
-                        Log.i("Calling ",othernumber);
-                        Intent callIntent = new Intent(Intent.ACTION_CALL);
-                        callIntent.setData(Uri.parse("tel:" + othernumber));
-                        startActivity(callIntent);
-                    }
-                });
-            }
+                    });
+                }
             }
         }
         catch (Exception e)
@@ -189,6 +194,27 @@ public class GotoContact extends AppCompatActivity {
     }
     public void deleteContact(View view)
     {
+
+        AlertDialog.Builder alert=new AlertDialog.Builder(this);
+        alert.setMessage("Delete?");
+        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                util();
+            }
+        });
+
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        AlertDialog ad=alert.create();
+        ad.show();
+
+        /*
         SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
         try
         {
@@ -202,20 +228,30 @@ public class GotoContact extends AppCompatActivity {
         }
         Intent intent=new Intent(this,MainActivity.class);
         startActivity(intent);
-
+        */
     }
     public void options(View view)
     {
         SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
         Cursor cursor;
-        cursor=db.rawQuery("SELECT ID FROM CONTACTS WHERE NAME='"+getname+"' AND MOBILE='"+getnumber+"' ",null);
+        cursor=db.rawQuery("SELECT ID,ADDRESS FROM CONTACTS WHERE NAME='"+getname+"' AND MOBILE='"+getnumber+"' ",null);
         if(cursor.moveToNext())
         {
             Log.i("Show ",cursor.getString(0)+ " LENGTH = "+ String.valueOf(cursor.getString(0).length()));
             String id=cursor.getString(0);
-            Intent intent=new Intent(this,Options.class);
-            intent.putExtra("id",id);
-            startActivity(intent);
+            String addr=cursor.getString(1);
+            if(addr.length()>0)
+            {
+                Intent intent=new Intent(this,Options.class);
+                intent.putExtra("id",id);
+                intent.putExtra("name",getname);
+                intent.putExtra("mobile",getnumber);
+                intent.putExtra("address",addr);
+                startActivity(intent);
+            }
+
+            else
+                Toast.makeText(this,"No Address Found",Toast.LENGTH_SHORT);
 
         }
 
@@ -224,5 +260,23 @@ public class GotoContact extends AppCompatActivity {
     {
         Intent intent=new Intent(this,MainActivity.class);
         startActivity(intent);
+    }
+
+    public void util()
+    {
+        SQLiteDatabase db=context.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
+        try
+        {
+            db.execSQL("DELETE FROM CONTACTS WHERE NAME='"+getname+"' AND MOBILE='"+getnumber+"' ");
+            Toast toast=Toast.makeText(context,"Deleted!",Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show();
+        }
+        Intent intent=new Intent(context,MainActivity.class);
+        startActivity(intent);
+
     }
 }

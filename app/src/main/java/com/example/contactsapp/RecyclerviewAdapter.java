@@ -85,7 +85,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
                             new AlertDialog.Builder(context)
                                     .setTitle("Merge Entry?")
-                                    .setMessage("This will delete the cuurent contact?")
+                                    .setMessage("This will delete the current contact?")
 
                                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {

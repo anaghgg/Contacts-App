@@ -32,27 +32,52 @@ public class Options extends AppCompatActivity {
     Cursor cursor;
     boolean address_exists=false;
     boolean merge;
+    String TAG="ADDRESS";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
-        address="";
+
         id=getIntent().getStringExtra("id");
-        Toast.makeText(this,"Enable Internet If You Haven't",Toast.LENGTH_LONG).show();
+        name=getIntent().getStringExtra("name");
+        mobile=getIntent().getStringExtra("mobile");
+        address=getIntent().getStringExtra("address");
+
+        Toast.makeText(this,"Please Enable Internet If You Haven't",Toast.LENGTH_SHORT).show();
+
         SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
-        cursor=db.rawQuery("SELECT ADDRESS FROM CONTACTS WHERE ID='"+id+"' ",null);
-        if(cursor.moveToNext())
+        cursor=db.rawQuery("SELECT LAT,LON FROM COORDS WHERE MOBILE='"+mobile+"' ",null);
+        if(!cursor.moveToNext())
         {
-            if(cursor.getString(0).trim().length()>0)
+            try{
+                Geocoder geo=new Geocoder(this,Locale.getDefault());
+                List<Address> current=geo.getFromLocationName(address,1);
+                if(current.size()>0)
+                {
+                    Double y=current.get(0).getLatitude();
+                    Double ry=Math.round(y*100000D)/100000D;
+                    latitude=String.valueOf(ry);
+                    Double z=current.get(0).getLongitude();
+                    Double rz=Math.round(z*100000D)/100000D;
+                    longitude=String.valueOf(rz);
+
+                    db.execSQL("INSERT INTO COORDS VALUES ('"+mobile+"','"+name+"','"+latitude+"','"+longitude+"')");
+                    Log.i(TAG,latitude+" "+longitude);
+                    address_exists=true;
+
+                }
+            }
+            catch (Exception e)
             {
-                address=cursor.getString(0);
-                address_exists=true;
+                Log.e(TAG,"GEOCODE ERROR",e);
             }
         }
-        if(address_exists)
-            Toast.makeText(this,"Address Valid",Toast.LENGTH_SHORT).show();
-        else
-            Toast.makeText(this,"Address Invalid",Toast.LENGTH_SHORT).show();
+        else {
+            address_exists=true;
+            latitude=cursor.getString(0);
+            longitude=cursor.getString(1);
+        }
+
     }
 
     public void shownearby(View view)
@@ -75,6 +100,7 @@ public class Options extends AppCompatActivity {
         SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
         if(address_exists)
         {
+            /*
             Log.i("Geocode","Inside shownearby");
             latitude="";longitude="";
             Geocoder geo=new Geocoder(this, Locale.getDefault());
@@ -94,64 +120,38 @@ public class Options extends AppCompatActivity {
             catch (IOException e)
             {
                 Log.e("Geocode","Error",e);
-            }
+            }*/
 
             if(latitude.trim().length()>0 && longitude.trim().length()>0)
             {
                 Double dlat=Double.valueOf(latitude.trim());
                 Double dlong=Double.valueOf(longitude.trim());
-                Log.i("Geocode",dlat+"  "+dlong);
+                Log.i(TAG,dlat+"  "+dlong);
 
-                ArrayList<String>addresses=new ArrayList<>();
-                ArrayList<String>names=new ArrayList<>();
-                ArrayList<String>numbers=new ArrayList<>();
-
-                cursor=db.rawQuery("SELECT ID,NAME,MOBILE,ADDRESS FROM CONTACTS WHERE LENGTH(ADDRESS)>0 ",null);
-
-                while(cursor.moveToNext())
-                {
-
-                    if(cursor.getString(3).trim().length()>0 && !id.trim().equals(cursor.getString(0).trim()))
-                    {
-                        names.add(cursor.getString(1));
-                        numbers.add(cursor.getString(2));
-                        addresses.add(cursor.getString(3));
-                    }
-                }
                 ArrayList<String>finalnames=new ArrayList<>();
                 ArrayList<String>finalnumbers=new ArrayList<>();
-                if(addresses.size()>0)
+
+                cursor=db.rawQuery("SELECT * FROM COORDS WHERE MOBILE!='"+mobile+"' ",null);
+                while(cursor.moveToNext())
                 {
-                    for(int i=0;i<addresses.size();i++)
+                    String _mobile=cursor.getString(0);
+                    String _name=cursor.getString(1);
+                    String _lat=cursor.getString(2);
+                    String _long=cursor.getString(3);
+
+                    Double lat=Double.valueOf(_lat);
+                    Double lon=Double.valueOf(_long);
+
+                    if(lat<d+dlat && lat>dlat-d && lon<d+dlong && lon>dlong-d)
                     {
-                        try{
-                            List<Address> addressList=geo.getFromLocationName(addresses.get(i),1);
-                            if(addressList.size()>0)
-                            {
-                                Double rd1=addressList.get(0).getLatitude();
-                                Double rd2=addressList.get(0).getLongitude();
-                                Double d1=Math.round(rd1*100000D)/100000D;
-                                Double d2=Math.round(rd2*100000D)/100000D;
-                                Log.i("Geocode",names.get(i)+" "+String.valueOf(d1)+" "+String.valueOf(d2));
-
-
-
-                                if(d1<d+dlat && d1>dlat-d && d2<dlong+d && d2>dlong-d)
-                                {
-                                    finalnames.add(names.get(i));
-                                    finalnumbers.add(numbers.get(i));
-                                }
-
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Log.i("Geocode","SECOND Geo Error");
-                        }
+                        finalnames.add(_name);
+                        finalnumbers.add(_mobile);
                     }
                 }
 
-                Log.i("Geocode","All Geo Ok");
+
+
+                Log.i(TAG,"All Geo Ok");
                 if(finalnames.size()>0 &&!merge)
                 {
                     String addressshow="Yes";
@@ -194,7 +194,7 @@ public class Options extends AppCompatActivity {
                 Toast.makeText(this,"Address Error",Toast.LENGTH_SHORT).show();
         }
         else
-            Toast.makeText(this,"Address Error/Invalid",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Address Error/Invalid or No Internet",Toast.LENGTH_SHORT).show();
 
 
     }

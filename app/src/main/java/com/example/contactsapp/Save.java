@@ -42,6 +42,8 @@ public class Save extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save);
 
+        Toast.makeText(this,"Enable Internet For Best Experience",Toast.LENGTH_SHORT).show();
+
         Log.i("Save","Activity");
 
         _name= (EditText) findViewById(R.id.name);
@@ -324,6 +326,17 @@ public class Save extends AppCompatActivity {
                             "ALTMOBILE='" + altmobile + "',MAIL='" + mail + "',ALTMAIL='" + altmail + "',ADDRESS='" + addr + "'," +
                             "ALTADDRESS='" + altaddr + "',CATEGORY='" + selectedCategory + "' WHERE ID='" + getid + "'");
 
+                    db.execSQL("DELETE FROM COORDS WHERE MOBILE='"+mobile+"' ");
+
+                    if(addr.length()>0)
+                    {
+                        Intent service=new Intent(this,AddressService.class);
+                        service.putExtra("name",name);
+                        service.putExtra("mobile",mobile);
+                        service.putExtra("address",addr);
+                        startService(service);
+                    }
+
                     Toast.makeText(this, "Update Done", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
@@ -343,7 +356,7 @@ public class Save extends AppCompatActivity {
 
         }
         else if(!update && !merge)
-            {
+        {
             Toast toast;
             if (name.trim().length() == 0 || mobile.trim().length() == 0) {
 
@@ -359,8 +372,17 @@ public class Save extends AppCompatActivity {
                     toast = Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT);
                     toast.show();
 
-                        Intent intent = new Intent(this, MainActivity.class);
-                        startActivity(intent);
+                    if(addr.length()>0)
+                    {
+                        Intent service=new Intent(this,AddressService.class);
+                        service.putExtra("name",name);
+                        service.putExtra("mobile",mobile);
+                        service.putExtra("address",addr);
+                        startService(service);
+                    }
+
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
                 } catch (Exception e) {
                     Log.i("Error ", "Couldn't save");
                     Intent intent = new Intent(this, MainActivity.class);
@@ -453,4 +475,3 @@ public class Save extends AppCompatActivity {
 
 
 }
-

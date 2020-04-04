@@ -15,6 +15,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
                 "MOBILE VARCHAR(13) NOT NULL, ALTMOBILE VARCHAR(13), MAIL VARCHAR(30), ALTMAIL VARCHAR(30), ADDRESS VARCHAR(60)," +
                 " ALTADDRESS VARCHAR(60), CATEGORY VARCHAR(20))" );
 
+        db.execSQL("CREATE TABLE IF NOT EXISTS COORDS (MOBILE VARCHAR(14) PRIMARY KEY,NAME VARCHAR(30), LAT VARCHAR(20), LON VARCHAR(20))");
     }
 
     public void saveContact(View view) {
@@ -45,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
         Intent showintent = new Intent(this, Show.class);
         showintent.putExtra("search", name);
         startActivity(showintent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
     }
 
 }
