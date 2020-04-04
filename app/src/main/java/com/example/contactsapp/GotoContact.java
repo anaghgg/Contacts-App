@@ -214,21 +214,6 @@ public class GotoContact extends AppCompatActivity {
         AlertDialog ad=alert.create();
         ad.show();
 
-        /*
-        SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
-        try
-        {
-            db.execSQL("DELETE FROM CONTACTS WHERE NAME='"+getname+"' AND MOBILE='"+getnumber+"' ");
-            Toast toast=Toast.makeText(this,"Deleted!",Toast.LENGTH_SHORT);
-            toast.show();
-        }
-        catch (Exception e)
-        {
-            Toast.makeText(this,"Error",Toast.LENGTH_SHORT).show();
-        }
-        Intent intent=new Intent(this,MainActivity.class);
-        startActivity(intent);
-        */
     }
     public void options(View view)
     {

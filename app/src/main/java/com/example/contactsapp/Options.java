@@ -100,27 +100,7 @@ public class Options extends AppCompatActivity {
         SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
         if(address_exists)
         {
-            /*
-            Log.i("Geocode","Inside shownearby");
-            latitude="";longitude="";
-            Geocoder geo=new Geocoder(this, Locale.getDefault());
-            try{
-                List<Address> current=geo.getFromLocationName(address,1);
-                if(current.size()>0)
-                {
-                    Double y=current.get(0).getLatitude();
-                    Double ry=Math.round(y*100000D)/100000D;
-                    latitude=String.valueOf(ry);
-                    Double z=current.get(0).getLongitude();
-                    Double rz=Math.round(z*100000D)/100000D;
-                    longitude=String.valueOf(rz);
-                    Log.i("Geocode","First Geo Ok");
-                }
-            }
-            catch (IOException e)
-            {
-                Log.e("Geocode","Error",e);
-            }*/
+
 
             if(latitude.trim().length()>0 && longitude.trim().length()>0)
             {
