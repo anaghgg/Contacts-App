@@ -13,3 +13,8 @@ Operations Supported :
 
 6.Find other contacts who live nearby a selected contact. 
   Option to merge selected contact with someone who lives nearby also provided.
+
+Improvements in this version:
+
+1. Alert Dialog for "Delete" option
+2. IntentService for operations related to finding or merging contacts living nearby
