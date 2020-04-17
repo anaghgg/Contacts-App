@@ -18,25 +18,35 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class GotoContact extends AppCompatActivity {
     public String getname;
     public String getnumber;
     Context context;
+    String TAG="SAVED";
+    ImageView imv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goto_contact);
+        SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
         context=getApplicationContext();
         String name = getIntent().getStringExtra("getname");
         final String number = getIntent().getStringExtra("getnumber");
@@ -53,12 +63,24 @@ public class GotoContact extends AppCompatActivity {
         TextView showaltaddr=findViewById(R.id.officeaddress);
         TextView showcategory=findViewById(R.id.category);
 
+        imv=(ImageView)findViewById(R.id.showImage);
+        Drawable myDrawable = getResources().getDrawable(R.drawable.defaultimage);
+        imv.setImageDrawable(myDrawable);
+
+        Cursor cursor1=db.rawQuery("SELECT IMG FROM IMAGEDB WHERE MOBILE='"+getnumber+"' ",null);
+        if(cursor1.moveToNext())
+        {
+            byte[] image = cursor1.getBlob(0);
+            Bitmap bmp= BitmapFactory.decodeByteArray(image, 0 , image.length);
+            imv.setImageBitmap(bmp);
+        }
+
 
         showname.setText(name);
         showprimary.setText(number);
         showprimary.setCompoundDrawablePadding(20);
         showprimary.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_call_black_24dp,0);
-        SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
+
         final Cursor cursor=db.rawQuery("SELECT ALTMOBILE,NICKNAME,MAIL,ALTMAIL,ADDRESS,ALTADDRESS,CATEGORY FROM CONTACTS WHERE NAME='"+name+"' and MOBILE='"+number+"'",null);
 
         try {
@@ -141,6 +163,8 @@ public class GotoContact extends AppCompatActivity {
                         }
                     });
                 }
+
+
             }
         }
         catch (Exception e)
@@ -253,6 +277,8 @@ public class GotoContact extends AppCompatActivity {
         try
         {
             db.execSQL("DELETE FROM CONTACTS WHERE NAME='"+getname+"' AND MOBILE='"+getnumber+"' ");
+            db.execSQL("DELETE FROM COORDS WHERE MOBILE='"+getnumber+"' ");
+            db.execSQL("DELETE FROM IMAGEDB WHERE MOBILE='"+getnumber+"' ");
             Toast toast=Toast.makeText(context,"Deleted!",Toast.LENGTH_SHORT);
             toast.show();
         }
@@ -264,4 +290,5 @@ public class GotoContact extends AppCompatActivity {
         startActivity(intent);
 
     }
+
 }

@@ -1,6 +1,7 @@
 package com.example.contactsapp;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
                 " ALTADDRESS VARCHAR(60), CATEGORY VARCHAR(20))" );
 
         db.execSQL("CREATE TABLE IF NOT EXISTS COORDS (MOBILE VARCHAR(14) PRIMARY KEY,NAME VARCHAR(30), LAT VARCHAR(20), LON VARCHAR(20))");
+
+        db.execSQL("CREATE TABLE IF NOT EXISTS IMAGEDB (MOBILE VARCHAR(14) PRIMARY KEY,IMG BLOB)");
+
     }
 
     public void saveContact(View view) {

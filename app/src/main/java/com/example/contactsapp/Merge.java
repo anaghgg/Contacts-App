@@ -132,6 +132,8 @@ public class Merge extends AppCompatActivity {
                             {
                                 String m=cursor.getString(0);
                                 db.execSQL("DELETE FROM COORDS WHERE MOBILE='"+m+"' ");
+                                db.execSQL("DELETE FROM IMAGEDB WHERE MOBILE='"+m+"' ");
+
                             }
                             db.execSQL("DELETE FROM CONTACTS WHERE ID='" + delete_id + "' ");
                         } catch (Exception e) {

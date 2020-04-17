@@ -16,14 +16,38 @@
             android:text="HOME"
             android:layout_alignParentRight="true"
             android:id="@+id/homesave"
+            android:onClick="goHome"
             />
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/setimage"
+            android:layout_below="@id/homesave"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="4dp"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ADD IMAGE"
+            android:layout_below="@id/homesave"
+            android:layout_toRightOf="@id/setimage"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:id="@+id/getimage"
+            android:onClick="selectimage"
+            />
+
+
         <EditText
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_below="@id/homesave"
+            android:layout_below="@id/setimage"
             android:layout_marginTop="2dp"
             android:ems="10"
             android:hint="Name"
