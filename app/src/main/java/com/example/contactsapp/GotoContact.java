@@ -253,6 +253,7 @@ public class GotoContact extends AppCompatActivity {
         try
         {
             db.execSQL("DELETE FROM CONTACTS WHERE NAME='"+getname+"' AND MOBILE='"+getnumber+"' ");
+            db.execSQL("DELETE FROM COORDS WHERE MOBILE='"+getnumber+"' ");
             Toast toast=Toast.makeText(context,"Deleted!",Toast.LENGTH_SHORT);
             toast.show();
         }
