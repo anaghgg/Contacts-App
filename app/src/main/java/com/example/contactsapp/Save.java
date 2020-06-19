@@ -403,8 +403,8 @@ public class Save extends AppCompatActivity {
             catch (Exception e) {
                 Log.i("Update", "Error");
                 Toast.makeText(this, "Error", Toast.LENGTH_SHORT);
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                //Intent intent = new Intent(this, MainActivity.class);
+                //startActivity(intent);
             }
 
 
@@ -451,8 +451,8 @@ public class Save extends AppCompatActivity {
                     startActivity(intent);
                 } catch (Exception e) {
                     Log.i("Error ", "Couldn't save");
-                    Intent intent = new Intent(this, MainActivity.class);
-                    startActivity(intent);
+                    //Intent intent = new Intent(this, MainActivity.class);
+                    //startActivity(intent);
                 }
             }
         }
