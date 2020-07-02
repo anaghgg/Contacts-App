@@ -94,6 +94,7 @@ public class Show extends AppCompatActivity {
                 rv.setAdapter(adapter);
                 rv.setLayoutManager(new LinearLayoutManager(this));
 
+
             }
             catch (Exception e)
             {
@@ -108,4 +109,5 @@ public class Show extends AppCompatActivity {
         Intent intent=new Intent(this,MainActivity.class);
         startActivity(intent);
     }
+
 }
