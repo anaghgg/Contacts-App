@@ -1,4 +1,4 @@
-Operations Supported :
+**Operations Supported**
 
 1.Saving new contact
 
@@ -15,4 +15,6 @@ Operations Supported :
   Option to merge selected contact with someone who lives nearby also provided.
   
   
-Espresso Testing in : app/src/androidTest/java/com/example/contactsapp/SaveTest.java
+**Espresso Testing** : app/src/androidTest/java/com/example/contactsapp/
+
+
