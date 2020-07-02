@@ -13,3 +13,6 @@ Operations Supported :
 
 6.Find other contacts who live nearby a selected contact. 
   Option to merge selected contact with someone who lives nearby also provided.
+  
+  
+Espresso Testing in : app/src/androidTest/java/com/example/contactsapp/SaveTest.java
