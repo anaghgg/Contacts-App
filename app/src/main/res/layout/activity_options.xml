@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Options">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Show Contact(s) Who Live Nearby"
+        android:textSize="17sp"
+        android:textColor="#000"
+        android:onClick="shownearby"
+        android:id="@+id/showbutton"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_below="@id/showbutton"
+        android:textSize="17sp"
+        android:text="Merge With Contact Who Lives Nearby"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="25dp"
+        android:textColor="#000"
+        android:id="@+id/mergebutton"
+        android:onClick="mergenearby"
+        />
+
+</RelativeLayout>

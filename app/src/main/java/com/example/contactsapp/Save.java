@@ -1,39 +1,67 @@
+/*
+    Saves a new contact if no existing numbers or emails are present in the new contact
+    Also used to update an existing contact with duplication constraint
+ */
+
+
 package com.example.contactsapp;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Save extends AppCompatActivity {
+    private static final int RESULT_LOAD_IMG =100 ;
     Spinner spinner;
     Context context;
     ArrayList<String> fetchCategory=new ArrayList<String>();
-    boolean newCat=false,merge=false,dontdupaddr=false,update=false;
-    String getid,id,name,nickname,mobile,altmobile,mail,altmail,addr,altaddr,getnewcat,selectedCategory;
+    boolean newCat=false,merge=false,dontdupaddr=false,update=false,hasImage;
+    String getid,id,name,nickname,mobile,altmobile,mail,altmail,addr,altaddr,getnewcat,selectedCategory,saveUri;
     Cursor cursor;
     EditText _name,_nickname,_mobile,_altmobile,_mail,_altmail,_addr,_altaddr;
+    ImageView imv;
+    Bitmap selectedImage;
+    String TAG="SAVED";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save);
+        SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
+        hasImage=false;
+        Toast.makeText(this,"Enable Internet For Best Experience",Toast.LENGTH_SHORT).show();
 
         Log.i("Save","Activity");
 
@@ -46,24 +74,36 @@ public class Save extends AppCompatActivity {
         _addr= (EditText) findViewById(R.id.address);
         _altaddr= (EditText) findViewById(R.id.altaddress);
 
+        imv=(ImageView)findViewById(R.id.setimage);
+        Drawable myDrawable = getResources().getDrawable(R.drawable.defaultimage);
+        imv.setImageDrawable(myDrawable);
+
         if(getIntent().hasExtra("id"))
         {
             getid=getIntent().getStringExtra("id");
             Log.i("Id ",getid+" Length = "+ String.valueOf(getid.length()));
             update=true;
             updateOps(getid);
+
+            String mob=_mobile.getText().toString();
+            cursor=db.rawQuery("SELECT IMG FROM IMAGEDB WHERE MOBILE = '"+mob+"' ",null);
+            if(cursor.moveToNext())
+            {
+                 byte[] image = cursor.getBlob(0);
+                 Bitmap bmp= BitmapFactory.decodeByteArray(image, 0 , image.length);
+                 imv.setImageBitmap(bmp);
+            }
         }
         else
             update=false;
 
         context=getApplicationContext();
-        SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
+
 
         db.execSQL("CREATE TABLE IF NOT EXISTS CATEGORIES ( CATEGORY VARCHAR(20) PRIMARY KEY)");;
         cursor=db.rawQuery("SELECT COUNT(*) FROM CATEGORIES",null);
         while(cursor.moveToNext())
         {
-            //String c = cursor.getString(0);
             int cInt=Integer.parseInt(cursor.getString(0));
             if(cInt==0)
             {
@@ -116,6 +156,7 @@ public class Save extends AppCompatActivity {
 
 
     }
+    //When User Adds a New Category
     public void  getCategory(View view)
     {
         EditText addcat = findViewById(R.id.newcategory);
@@ -157,19 +198,16 @@ public class Save extends AppCompatActivity {
 
 
         addr = "";
-        String homelat = "";
-        String homelong = "";
         if (_addr.getText().toString().trim().length() != 0)
             addr = _addr.getText().toString();
 
 
         altaddr = "";
-        String officelat = "";
-        String officelong = "";
         if (_altaddr.getText().toString().trim().length() != 0)
             altaddr = _altaddr.getText().toString();
 
         spinner = (Spinner) findViewById(R.id.categories);
+
 
         if (newCat == true)
             selectedCategory = getnewcat;
@@ -182,6 +220,7 @@ public class Save extends AppCompatActivity {
 
         mobile=mobile.trim();altmobile=altmobile.trim();mail=mail.trim();altmail=altmail.trim();
 
+        //Detecting Duplicate Numbers and Emails During Update
 
         if (update && !merge)
         {
@@ -255,8 +294,11 @@ public class Save extends AppCompatActivity {
             }
 
         }
+        ////Detecting Duplicate Numbers and Emails During Saving a New Contact
         else {
             try {
+
+                //PRIMARY NUMBER CLASHING
                 if (mobile.length() != 0 && !merge) {
 
                     cursor = db.rawQuery("SELECT ID FROM CONTACTS WHERE MOBILE = '" + mobile + "' OR ALTMOBILE='" + mobile + "'", null);
@@ -269,6 +311,8 @@ public class Save extends AppCompatActivity {
                     }
 
                 }
+
+                //SECONDARY NUMBER CLASHING
                 if (altmobile.length() != 0 && !merge) {
                     cursor = db.rawQuery("SELECT ID FROM CONTACTS WHERE MOBILE = '"+altmobile+"' OR ALTMOBILE='"+altmobile +"'", null);
                     if (cursor.moveToNext()) {
@@ -279,6 +323,8 @@ public class Save extends AppCompatActivity {
 
                     }
                 }
+
+                //PRIMARY MAIL CLASHING
                 if (mail.length() != 0 && !merge) {
 
                     cursor = db.rawQuery("SELECT ID FROM CONTACTS WHERE MAIL = '" + mail + "' OR ALTMAIL='" + mail + "'", null);
@@ -289,6 +335,8 @@ public class Save extends AppCompatActivity {
 
                     }
                 }
+
+                //SECONDARY MAIL CLASHING
                 if (altmail.length() != 0 && !merge) {
 
 
@@ -307,15 +355,41 @@ public class Save extends AppCompatActivity {
             }
         }
 
+        //No Duplicate Numbers or Emails Found!
+
         if (update && !merge) {
             Log.i("On Update ", "Ok");
 
             try {
+
+                //UPDATE OPERATION
                 if (name.length() != 0 && mobile.length() != 0) {
                     db.execSQL("UPDATE CONTACTS SET NAME='" + name + "', NICKNAME='" + nickname + "', MOBILE = '" + mobile + "'," +
                             "ALTMOBILE='" + altmobile + "',MAIL='" + mail + "',ALTMAIL='" + altmail + "',ADDRESS='" + addr + "'," +
-                            "ALTADDRESS='" + altaddr + "',CATEGORY='" + selectedCategory + "', HOMELAT='" + homelat + "', HOMELONG='" + homelong + "'," +
-                            "OFFICELAT='" + officelat + "', OFFICELONG='" + officelong + "' WHERE ID='" + getid + "'");
+                            "ALTADDRESS='" + altaddr + "',CATEGORY='" + selectedCategory + "' WHERE ID='" + getid + "'");
+
+                    db.execSQL("DELETE FROM COORDS WHERE MOBILE='"+mobile+"' ");
+                    if(hasImage)
+                    {
+                        db.execSQL("DELETE FROM IMAGEDB WHERE MOBILE='"+mobile+"' ");
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                        byte[] img = bos.toByteArray();
+                        ContentValues values = new ContentValues();
+                        values.put("MOBILE",mobile);
+                        values.put("IMG",img);
+                        db.insert("IMAGEDB",null,values);
+
+                    }
+
+                    if(addr.length()>0)
+                    {
+                        Intent service=new Intent(this,AddressService.class);
+                        service.putExtra("name",name);
+                        service.putExtra("mobile",mobile);
+                        service.putExtra("address",addr);
+                        startService(service);
+                    }
 
                     Toast.makeText(this, "Update Done", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, MainActivity.class);
@@ -329,14 +403,14 @@ public class Save extends AppCompatActivity {
             catch (Exception e) {
                 Log.i("Update", "Error");
                 Toast.makeText(this, "Error", Toast.LENGTH_SHORT);
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                //Intent intent = new Intent(this, MainActivity.class);
+                //startActivity(intent);
             }
 
 
         }
         else if(!update && !merge)
-            {
+        {
             Toast toast;
             if (name.trim().length() == 0 || mobile.trim().length() == 0) {
 
@@ -344,21 +418,41 @@ public class Save extends AppCompatActivity {
                 toast.show();
             } else {
                 try {
+                    //NEW CONTACT OPERATION
 
-                    db.execSQL("INSERT INTO CONTACTS(NAME,NICKNAME,MOBILE,ALTMOBILE,MAIL,ALTMAIL,ADDRESS,ALTADDRESS,CATEGORY,HOMELAT,HOMELONG,OFFICELAT,OFFICELONG)" +
+                    db.execSQL("INSERT INTO CONTACTS(NAME,NICKNAME,MOBILE,ALTMOBILE,MAIL,ALTMAIL,ADDRESS,ALTADDRESS,CATEGORY)" +
                             " VALUES ('" + name + "','" + nickname + "','" + mobile + "','" + altmobile + "','" + mail + "','" + altmail + "'," +
-                            "'" + addr + "','" + altaddr + "','" + selectedCategory + "'," +
-                            "'" + homelat + "', '" + homelong + "', '" + officelat + "', '" + officelong + "')");
+                            "'" + addr + "','" + altaddr + "','" + selectedCategory + "')");
+
+                    if(hasImage)
+                    {
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                        byte[] img = bos.toByteArray();
+                        ContentValues values = new ContentValues();
+                        values.put("MOBILE",mobile);
+                        values.put("IMG",img);
+                        db.insert("IMAGEDB",null,values);
+                    }
 
                     toast = Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT);
                     toast.show();
 
-                        Intent intent = new Intent(this, MainActivity.class);
-                        startActivity(intent);
-                } catch (Exception e) {
-                    Log.i("Error ", "Couldn't save");
+                    if(addr.length()>0)
+                    {
+                        Intent service=new Intent(this,AddressService.class);
+                        service.putExtra("name",name);
+                        service.putExtra("mobile",mobile);
+                        service.putExtra("address",addr);
+                        startService(service);
+                    }
+
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
+                } catch (Exception e) {
+                    Log.i("Error ", "Couldn't save");
+                    //Intent intent = new Intent(this, MainActivity.class);
+                    //startActivity(intent);
                 }
             }
         }
@@ -367,7 +461,7 @@ public class Save extends AppCompatActivity {
     }
 
 
-
+    //Merging During Saving a New Contact
     public void merging()
     {
         Toast toas=Toast.makeText(this,"Found Existing Contact",Toast.LENGTH_SHORT);
@@ -388,6 +482,8 @@ public class Save extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    //Merging in Case of Update
     public void merging(String contact_id)
     {
         Toast toas=Toast.makeText(this,"Found Existing Contact",Toast.LENGTH_SHORT);
@@ -424,7 +520,9 @@ public class Save extends AppCompatActivity {
                 selectedCategory=cursor.getString(8);
             else
                 selectedCategory="";
+
         }
+
 
     }
 
@@ -443,6 +541,47 @@ public class Save extends AppCompatActivity {
         return t;
     }
 
+    public void goHome(View view)
+    {
+        Intent intent=new Intent(this,MainActivity.class);
+        startActivity(intent);
+    }
+    public void selectimage(View v)
+    {
+        if (ActivityCompat.checkSelfPermission(v.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(Save.this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+
+            return;
+        }
+
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
+    }
+
+    @Override
+    protected void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+
+
+        if (resultCode == RESULT_OK) {
+            try {
+                final Uri imageUri = data.getData();
+                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                selectedImage = BitmapFactory.decodeStream(imageStream);
+                imv.setImageBitmap(selectedImage);
+                hasImage=true;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+
+            }
+
+        }else {
+            Toast.makeText(Save.this, "You haven't picked Image",Toast.LENGTH_LONG).show();
+        }
+    }
 
 }
 

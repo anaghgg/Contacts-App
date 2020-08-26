@@ -1,3 +1,9 @@
+/*
+      Used to merge :
+         -an yet to save contact having numbers or emails that are already present in some existing Contact
+         -an existing contact which after being updated has numbers or emails that are already present in some other existing Contact
+         -an existing contact that the user wishes to merge with some other contact living nearby
+*/
 package com.example.contactsapp;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,10 +19,14 @@ import android.widget.Toast;
 
 public class Merge extends AppCompatActivity {
     String id,name,nickname,mobile,altmobile,mail,altmail,address,altaddress,category,orgname,orgmobile;
+    String savedid,savedname,savednickname,savedmobile,savedaltmobile,savedmail,savedaltmail,savedaddress,savedaltaddress,savedcatgory;
+    String previous;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_merge);
+        Toast.makeText(this,"Enable Internet For Best Experience",Toast.LENGTH_SHORT);
         id=getIntent().getStringExtra("id");
         Log.i("CLASH ID",id);
 
@@ -42,8 +52,7 @@ public class Merge extends AppCompatActivity {
     {
         SQLiteDatabase db=this.openOrCreateDatabase("ContactsDB",MODE_PRIVATE,null);
         Cursor cursor;
-        String savedid,savedname,savednickname,savedmobile,savedaltmobile,savedmail,savedaltmail,savedaddress,savedaltaddress,savedcatgory;
-        //Name
+
         try {
             cursor=db.rawQuery("SELECT * FROM CONTACTS WHERE ID='"+id+"' ",null);
             if(cursor.moveToNext())
@@ -52,6 +61,7 @@ public class Merge extends AppCompatActivity {
                 savedname=cursor.getString(1);
                 savednickname=cursor.getString(2);
                 savedmobile=cursor.getString(3);
+                previous=savedmobile;
                 savedaltmobile=cursor.getString(4);
                 savedmail=cursor.getString(5);
                 savedaltmail=cursor.getString(6);
@@ -66,12 +76,17 @@ public class Merge extends AppCompatActivity {
                 {
                     if(savedmobile.equals(mobile) && altmobile.trim().length()!=0)
                         savedaltmobile=altmobile;
-                    else if(altmobile.trim().length()!=0)
+                    else if(mobile.trim().length()!=0)
                         savedaltmobile=mobile;
 
                 }
 
-                if(savedmail.trim().length()==0 && mail.trim().length()!=0)
+                if(savedmail.trim().length()==0 && savedaltmail.trim().length()==0 && mail.trim().length()!=0 && altmail.trim().length()!=0)
+                {
+                    savedmail=mail;
+                    savedaltmail=altmail;
+                }
+                else if(savedmail.trim().length()==0 && mail.trim().length()!=0)
                     savedmail=mail;
                 else if(savedaltmail.trim().length()==0 && mail.trim().length()!=0)
                 {
@@ -99,9 +114,27 @@ public class Merge extends AppCompatActivity {
                     Toast toast = Toast.makeText(this, "Merged Successfully", Toast.LENGTH_SHORT);
                     toast.show();
 
+                    db.execSQL("DELETE FROM COORDS WHERE MOBILE='"+savedmobile+"' ");
+                    if(savedaddress.length()>0)
+                    {
+                        Intent service=new Intent(this,AddressService.class);
+                        service.putExtra("name",savedname);
+                        service.putExtra("mobile",savedmobile);
+                        service.putExtra("address",savedaddress);
+                        startService(service);
+                    }
+
                     if (getIntent().hasExtra("update")) {
                         String delete_id = getIntent().getStringExtra("update");
                         try {
+                            cursor=db.rawQuery("SELECT MOBILE FROM CONTACTS WHERE ID='"+delete_id+"' ",null);
+                            if(cursor.moveToNext())
+                            {
+                                String m=cursor.getString(0);
+                                db.execSQL("DELETE FROM COORDS WHERE MOBILE='"+m+"' ");
+                                db.execSQL("DELETE FROM IMAGEDB WHERE MOBILE='"+m+"' ");
+
+                            }
                             db.execSQL("DELETE FROM CONTACTS WHERE ID='" + delete_id + "' ");
                         } catch (Exception e) {
                             Log.i("Merge", "Couldn't Delete");
