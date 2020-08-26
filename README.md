@@ -1,3 +1,4 @@
+
 **Operations Supported**
 
 1.Saving new contact
@@ -16,5 +17,3 @@
   
   
 **Espresso Testing** : app/src/androidTest/java/com/example/contactsapp/
-
-
