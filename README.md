@@ -12,7 +12,7 @@
 
 5.Show all contacts
 
-6.Find other contacts who live nearby a selected contact. 
+6.Find other contacts who live nearby a selected contact using Geocoder API. IntentService used for this task. 
   Option to merge selected contact with someone who lives nearby also provided.
   
   
